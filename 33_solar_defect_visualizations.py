@@ -15,13 +15,6 @@ import json
 from pathlib import Path
 from PIL import Image
 from plot_style import (
-
-# Import Tufte plotting utilities
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from tda_utils import setup_tufte_plot, TufteColors
-
     set_tufte_defaults, 
     apply_tufte_style, 
     save_tufte_figure, 
@@ -273,6 +266,8 @@ for spine in ax.spines.values():
 
 ax.set_xticks([0.5], minor=True)
 ax.set_yticks([0.5], minor=True)
+ax.grid(which='minor', color=COLORS['black'], linestyle='-', linewidth=2)
+
 plt.tight_layout()
 save_tufte_figure('33_solar_confusion_matrix.png')
 print("✓ Confusion matrix saved")
@@ -332,14 +327,14 @@ print("✓ Precision-recall curve saved")
 # ============================================================================
 print("\nGenerating sample thermal image visualization...")
 
-# Load a sample image with defects (find one with defective modules) - VECTORIZED
+# Load a sample image with defects (find one with defective modules)
 sample_image_name = None
 sample_annotations = None
 
-# Vectorized: Find first image with defects (100x faster than iterrows)
-defect_images = images_df[images_df['has_defects']]
-if len(defect_images) > 0:
-    sample_image_name = defect_images.iloc[0]['image']
+for img_name, row in images_df.iterrows():
+    if row['has_defects']:
+        sample_image_name = row['image']
+        break
 
 # If we found an image with defects, load it
 if sample_image_name:
