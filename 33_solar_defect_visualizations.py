@@ -14,9 +14,9 @@ import matplotlib.pyplot as plt
 import json
 from pathlib import Path
 from PIL import Image
-from plot_style import (
 
-# Import Tufte plotting utilities
+
+
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -183,7 +183,6 @@ ax1.annotate(f'Best: Epoch {best_epoch}',
              arrowprops=dict(arrowstyle='->', color=COLORS['accent_blue'], lw=1.5),
              fontsize=10)
 
-apply_tufte_style(ax1, show_grid=False)
 
 # Accuracy plot
 ax2.plot(epochs, train_acc, 'o-', color=COLORS['black'], linewidth=2, 
@@ -203,7 +202,6 @@ ax2.axhline(y=final_val_acc, color=COLORS['accent_green'], linestyle=':',
 ax2.text(1, final_val_acc + 1.5, f'{final_val_acc:.1f}%', 
          fontsize=10, color=COLORS['accent_green'], fontweight='bold')
 
-apply_tufte_style(ax2, show_grid=False)
 
 plt.suptitle('ResNet-18 Transfer Learning: 20 Epochs', y=1.02, fontsize=14, fontweight='bold')
 plt.tight_layout()
@@ -459,7 +457,6 @@ ax.annotate('160× faster\n10× cheaper\n31% more accurate',
             bbox=dict(boxstyle='round,pad=0.5', facecolor='white', 
                      edgecolor=COLORS['accent_green'], linewidth=2))
 
-apply_tufte_style(ax, show_grid=False)
 save_tufte_figure('33_solar_cost_benefit.png')
 print("✓ Cost-benefit analysis saved")
 
