@@ -1,13 +1,11 @@
 # Detecting Defective Solar Panels with Computer Vision and Thermography Using AI and Thermal Imaging for Solar Farm Maintenance
 
-::::::::::::### Detecting Defective Solar Panels with Computer Vision and Thermography 
+### Detecting Defective Solar Panels with Computer Vision and Thermography 
 
 ### Using AI and Thermal Imaging for Solar Farm Maintenance
-\
 
-Solar energy is booming. Global solar capacity has grown from 40 GW in
-2010 to over 1,000 GW in 2023. But here's the catch: solar panels fail.
-And when they do, they fail silently.
+
+Solar energy is booming. Global solar capacity has grown from 40 GW in 2010 to over 1,000 GW in 2023. But here's the catch: solar panels fail. And when they do, they fail silently.
 
 A single defective panel in a 10,000-panel farm can:
 
@@ -27,10 +25,7 @@ Manual inspection of solar farms is:
 There has to be a better way.
 
 ### AI + Thermal Imaging
-Defective solar panels have a signature: they get hot. Cracks,
-manufacturing defects, and electrical issues cause abnormal heat
-patterns that are invisible to the naked eye but obvious in thermal
-images.
+Defective solar panels have a signature: they get hot. Cracks, manufacturing defects, and electrical issues cause abnormal heat patterns that are invisible to the naked eye but obvious in thermal images.
 
 What if we could:
 
@@ -41,8 +36,7 @@ What if we could:
 
 That's exactly what we're building in this article.
 
-We're using the [Photovoltaic System Thermography
-Dataset](https://www.kaggle.com/datasets/marcosgabriel/photovoltaic-system-thermography) from Kaggle, which contains:
+We're using the [Photovoltaic System Thermography Dataset](https://www.kaggle.com/datasets/marcosgabriel/photovoltaic-system-thermography) from Kaggle, which contains:
 
 - 137 thermal images of real solar panel installations
 - 3,700+ annotated solar modules with polygon coordinates
@@ -62,13 +56,10 @@ Images with Defects: 4/137 (2.9%)
 Average Modules per Image: 27.2
 ```
 
-Interesting insight: Defects are rare (\~0.5%), which is realistic but
-presents a class imbalance challenge for machine learning.
+Interesting insight: Defects are rare (\~0.5%), which is realistic but presents a class imbalance challenge for machine learning.
 
 ### The Architecture: Transfer Learning to the Rescue
-We don't need to build a model from scratch. Instead, we'll use transfer
-learning with ResNet-18, a proven convolutional neural network
-pre-trained on millions of images.
+We don't need to build a model from scratch. Instead, we'll use transfer learning with ResNet-18, a proven convolutional neural network pre-trained on millions of images.
 
 ``` 
 ResNet-18 (Pre-trained on ImageNet)
@@ -81,21 +72,15 @@ ResNet-18 (Pre-trained on ImageNet)
     └── Linear (256 → 2 classes)
 ```
 
-- ResNet-18 already knows how to detect edges, textures, and
-  patterns
-- We only train the final layers to specialize in solar panel
-  defects
-- Fewer parameters to train = faster convergence, less
-  overfitting
+- ResNet-18 already knows how to detect edges, textures, and patterns
+- We only train the final layers to specialize in solar panel defects
+- Fewer parameters to train = faster convergence, less overfitting
 
 ### Training Strategy
-1.  [Extract individual module patches from full images (3,726
-    patches)]
-2.  [Split data: 80% training, 20% validation (stratified by defect
-    status)]
+1.  [Extract individual module patches from full images (3,726 patches)]
+2.  [Split data: 80% training, 20% validation (stratified by defect status)]
 3.  [Data augmentation: Random flips, rotations, color jitter]
-4.  [Loss function: Cross-entropy with class weights to handle
-    imbalance]
+4.  [Loss function: Cross-entropy with class weights to handle imbalance]
 5.  [Optimization: Adam optimizer with learning rate scheduling]
 
 ### High Accuracy Defect Detection
@@ -111,30 +96,23 @@ F1-Score: 94.5%
 ```
 
 ### What This Means in Practice
-- High Precision (95.2%): When the model says "defective," it's right
-  95% of the time
-- High Recall (93.8%): The model catches 94% of all actual
-  defects
-- Low False Negatives: Critical for safety --- we don't miss dangerous
-  defects
+- High Precision (95.2%): When the model says "defective," it's right 95% of the time
+- High Recall (93.8%): The model catches 94% of all actual defects
+- Low False Negatives: Critical for safety --- we don't miss dangerous defects
 
 ### Visualizing Predictions
-The model doesn't just classify --- it shows you exactly where the
-defects are:
+The model doesn't just classify --- it shows you exactly where the defects are:
 
 Color coding:
 
 - 🟢 Green: Healthy modules (correctly identified)
 - 🔴 Red: Defective modules (correctly identified)
 - 🟡 Yellow: Incorrect predictions (rare!)
-::::### Real-World Applications 
+### Real-World Applications 
 
-Imagine we put this in prodduciton. Before AI, we would manual
-inspection 10,000 panels o er the course of 2--3 weeks at a cost of
-about \$10,000-\$20,000. 
+Imagine we put this in prodduciton. Before AI, we would manual inspection 10,000 panels o er the course of 2--3 weeks at a cost of about \$10,000-\$20,000.
 
-With autpmated inspetion, we coiuld inspect all 10K pane.s in 2--3 hours
-at a cost of \$1,000-\$2,000 (mostly drone operation).
+With autpmated inspetion, we coiuld inspect all 10K pane.s in 2--3 hours at a cost of \$1,000-\$2,000 (mostly drone operation).
 
 ### Code
 I've made everything available on GitHub:
@@ -215,7 +193,7 @@ for epoch in range(num_epochs):
         best_val_acc = val_acc
         torch.save(model.state_dict(), 'best_model.pth')
 ```
-::::### Challenges and Lessons Learned 
+### Challenges and Lessons Learned 
 
 ###  
 ### 1. Class Imbalance
@@ -231,8 +209,7 @@ Solutions:
 
 ### 2. Thermal Image Characteristics
 ###  
-Observation: Thermal images have different properties than natural
-images
+Observation: Thermal images have different properties than natural images
 
 Approach:
 
@@ -253,18 +230,16 @@ Solution:
 - Used lightweight ResNet-18 (not ResNet-50/101)
 - Quantization for mobile deployment (future work)
 - Batch processing for efficiency
-::::### Future Improvements 
+### Future Improvements 
 
 ###  
 ### 1. Semantic Segmentation
 ###  
-Current approach: Classify pre-annotated modules Next step: Use U-Net or
-Mask R-CNN for end-to-end detection
+Current approach: Classify pre-annotated modules Next step: Use U-Net or Mask R-CNN for end-to-end detection
 
 ### 2. Multi-Class Defect Types
 ###  
-Current approach: Binary (defective vs. healthy) Next step: Classify
-defect types:
+Current approach: Binary (defective vs. healthy) Next step: Classify defect types:
 
 - Hot spots
 - Cracks
@@ -274,8 +249,7 @@ defect types:
 
 ### 3. Temporal Analysis
 ###  
-Current approach: Single-image classification Next step: Track defect
-progression over time
+Current approach: Single-image classification Next step: Track defect progression over time
 
 - Predict time-to-failure
 - Optimize replacement schedules
@@ -289,7 +263,6 @@ Current approach: Cloud/server inference Next step:
 - Real-time inference on drones
 
 ####  
-\
-::::::::::::::::::::[View original.](https://medium.com/p/5cd0a43fc187)
+\ [View original.](https://medium.com/p/5cd0a43fc187)
 
 Exported from [Medium](https://medium.com) on November 10, 2025.
