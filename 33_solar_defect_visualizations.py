@@ -31,9 +31,7 @@ from tda_utils import setup_tufte_plot, TufteColors
     COLORS
 )
 
-logger.info("=" * 70)
 logger.info("Blog 33: Solar Panel Defect Detection - Visualizations")
-logger.info("=" * 70)
 
 # Data paths
 DATA_DIR = Path("/Users/k.jones/Downloads/archive (3)")
@@ -466,9 +464,7 @@ logger.info("✓ Cost-benefit analysis saved")
 # ============================================================================
 # Summary
 # ============================================================================
-logger.info("=" * 70)
 logger.info("All visualizations generated successfully!")
-logger.info("=" * 70)
 logger.info("Files created:")
 logger.info("  - 33_solar_class_distribution.png")
 logger.info("  - 33_solar_training_curves.png")
@@ -493,5 +489,4 @@ logger.info("Operational Impact:")
 logger.info(f"  Time reduction: {time_hours[0]/time_hours[1]:.0f}× faster")
 logger.info(f"  Cost reduction: {cost_dollars[0]/cost_dollars[1]:.0f}× cheaper")
 logger.info(f"  Accuracy improvement: +{accuracy_pct[1]-accuracy_pct[0]:.1f}%")
-logger.info("=" * 70)
 
