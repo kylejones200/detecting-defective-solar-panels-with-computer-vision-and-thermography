@@ -20,8 +20,6 @@ from PIL import Image
 
 
 
-import sys
-from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from tda_utils import setup_tufte_plot, TufteColors
 
