@@ -5,7 +5,10 @@ Generate Tufte-style black and white visualizations for solar panel defect detec
 """
 
 import sys
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
@@ -28,9 +31,9 @@ from tda_utils import setup_tufte_plot, TufteColors
     COLORS
 )
 
-print("=" * 70)
-print("Blog 33: Solar Panel Defect Detection - Visualizations")
-print("=" * 70)
+logger.info("=" * 70)
+logger.info("Blog 33: Solar Panel Defect Detection - Visualizations")
+logger.info("=" * 70)
 
 # Data paths
 DATA_DIR = Path("/Users/k.jones/Downloads/archive (3)")
@@ -40,7 +43,7 @@ DATASET_2 = DATA_DIR / "dataset_2"
 # ============================================================================
 # STEP 1: Load and analyze annotations
 # ============================================================================
-print("\nAnalyzing dataset annotations...")
+logger.info("Analyzing dataset annotations...")
 
 def load_annotations(dataset_path):
     """Load all annotations from a dataset directory."""
@@ -78,8 +81,8 @@ modules_df2, images_df2 = load_annotations(DATASET_2)
 modules_df = pd.concat([modules_df1, modules_df2], ignore_index=True)
 images_df = pd.concat([images_df1, images_df2], ignore_index=True)
 
-print(f"✓ Loaded {len(images_df)} images")
-print(f"✓ Analyzed {len(modules_df)} solar modules")
+logger.info(f"✓ Loaded {len(images_df)} images")
+logger.info(f"✓ Analyzed {len(modules_df)} solar modules")
 
 # Calculate statistics
 total_images = len(images_df)
@@ -89,17 +92,17 @@ healthy_modules = total_modules - defective_modules
 images_with_defects = images_df['has_defects'].sum()
 defect_rate = (defective_modules / total_modules) * 100
 
-print(f"\nDataset Statistics:")
-print(f"  Total Images: {total_images}")
-print(f"  Total Modules: {total_modules}")
-print(f"  Defective: {defective_modules} ({defect_rate:.1f}%)")
-print(f"  Healthy: {healthy_modules} ({100-defect_rate:.1f}%)")
-print(f"  Images with defects: {images_with_defects}/{total_images}")
+logger.info(f"Dataset Statistics:")
+logger.info(f"  Total Images: {total_images}")
+logger.info(f"  Total Modules: {total_modules}")
+logger.info(f"  Defective: {defective_modules} ({defect_rate:.1f}%)")
+logger.info(f"  Healthy: {healthy_modules} ({100-defect_rate:.1f}%)")
+logger.info(f"  Images with defects: {images_with_defects}/{total_images}")
 
 # ============================================================================
 # VISUALIZATION 1: Dataset Overview - Class Distribution
 # ============================================================================
-print("\nGenerating class distribution visualization...")
+logger.info("Generating class distribution visualization...")
 
 set_tufte_defaults()
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -131,12 +134,12 @@ ax.annotate('Only 0.5% defective\nrequires careful handling\nof class imbalance'
 
 apply_tufte_style(ax, show_grid=False)
 save_tufte_figure('33_solar_class_distribution.png')
-print("✓ Class distribution saved")
+logger.info("✓ Class distribution saved")
 
 # ============================================================================
 # VISUALIZATION 2: Training Simulation - Model Learning Curves
 # ============================================================================
-print("\nGenerating training curves...")
+logger.info("Generating training curves...")
 
 # Simulate realistic training data (based on typical ResNet-18 transfer learning)
 np.random.seed(42)
@@ -206,12 +209,12 @@ ax2.text(1, final_val_acc + 1.5, f'{final_val_acc:.1f}%',
 plt.suptitle('ResNet-18 Transfer Learning: 20 Epochs', y=1.02, fontsize=14, fontweight='bold')
 plt.tight_layout()
 save_tufte_figure('33_solar_training_curves.png')
-print("✓ Training curves saved")
+logger.info("✓ Training curves saved")
 
 # ============================================================================
 # VISUALIZATION 3: Confusion Matrix
 # ============================================================================
-print("\nGenerating confusion matrix...")
+logger.info("Generating confusion matrix...")
 
 # Simulate final model predictions (98.7% accuracy on validation set)
 n_val_samples = int(total_modules * 0.2)  # 20% validation split
@@ -273,12 +276,12 @@ ax.set_xticks([0.5], minor=True)
 ax.set_yticks([0.5], minor=True)
 plt.tight_layout()
 save_tufte_figure('33_solar_confusion_matrix.png')
-print("✓ Confusion matrix saved")
+logger.info("✓ Confusion matrix saved")
 
 # ============================================================================
 # VISUALIZATION 4: Precision-Recall Trade-off
 # ============================================================================
-print("\nGenerating precision-recall curve...")
+logger.info("Generating precision-recall curve...")
 
 # Simulate precision-recall curve (typical for imbalanced classification)
 recall = np.linspace(0, 1, 100)
@@ -323,12 +326,12 @@ ax.set_ylim(0, 1)
 
 apply_tufte_style(ax, show_grid=True)
 save_tufte_figure('33_solar_precision_recall.png')
-print("✓ Precision-recall curve saved")
+logger.info("✓ Precision-recall curve saved")
 
 # ============================================================================
 # VISUALIZATION 5: Sample Thermal Image with Annotations
 # ============================================================================
-print("\nGenerating sample thermal image visualization...")
+logger.info("Generating sample thermal image visualization...")
 
 # Load a sample image with defects (find one with defective modules) - VECTORIZED
 sample_image_name = None
@@ -404,16 +407,16 @@ if sample_image_name:
                     y=0.98, fontsize=14, fontweight='bold')
         plt.tight_layout()
         save_tufte_figure('33_solar_detection_example.png')
-        print("✓ Detection example saved")
+        logger.info("✓ Detection example saved")
     else:
-        print("⚠ Sample image not found, skipping visualization")
+        logger.info("⚠ Sample image not found, skipping visualization")
 else:
-    print("⚠ No images with defects found in dataset")
+    logger.info("⚠ No images with defects found in dataset")
 
 # ============================================================================
 # VISUALIZATION 6: Cost-Benefit Analysis
 # ============================================================================
-print("\nGenerating cost-benefit comparison...")
+logger.info("Generating cost-benefit comparison...")
 
 fig, ax = plt.subplots(figsize=(12, 7))
 
@@ -458,37 +461,37 @@ ax.annotate('160× faster\n10× cheaper\n31% more accurate',
                      edgecolor=COLORS['accent_green'], linewidth=2))
 
 save_tufte_figure('33_solar_cost_benefit.png')
-print("✓ Cost-benefit analysis saved")
+logger.info("✓ Cost-benefit analysis saved")
 
 # ============================================================================
 # Summary
 # ============================================================================
-print("\n" + "=" * 70)
-print("All visualizations generated successfully!")
-print("=" * 70)
-print("\nFiles created:")
-print("  - 33_solar_class_distribution.png")
-print("  - 33_solar_training_curves.png")
-print("  - 33_solar_confusion_matrix.png")
-print("  - 33_solar_precision_recall.png")
-print("  - 33_solar_detection_example.png")
-print("  - 33_solar_cost_benefit.png")
+logger.info("=" * 70)
+logger.info("All visualizations generated successfully!")
+logger.info("=" * 70)
+logger.info("Files created:")
+logger.info("  - 33_solar_class_distribution.png")
+logger.info("  - 33_solar_training_curves.png")
+logger.info("  - 33_solar_confusion_matrix.png")
+logger.info("  - 33_solar_precision_recall.png")
+logger.info("  - 33_solar_detection_example.png")
+logger.info("  - 33_solar_cost_benefit.png")
 
-print("\nFinal Model Performance:")
-print(f"  Validation Accuracy: {val_acc[-1]:.1f}%")
-print(f"  Precision: {op_precision*100:.1f}%")
-print(f"  Recall: {op_recall*100:.1f}%")
-print(f"  F1 Score: {f1_score:.3f}")
+logger.info("Final Model Performance:")
+logger.info(f"  Validation Accuracy: {val_acc[-1]:.1f}%")
+logger.info(f"  Precision: {op_precision*100:.1f}%")
+logger.info(f"  Recall: {op_recall*100:.1f}%")
+logger.info(f"  F1 Score: {f1_score:.3f}")
 
-print("\nDataset Summary:")
-print(f"  Total images analyzed: {total_images}")
-print(f"  Total modules: {total_modules:,}")
-print(f"  Class imbalance ratio: {(healthy_modules/defective_modules):.1f}:1")
-print(f"  Defect rate: {defect_rate:.2f}%")
+logger.info("Dataset Summary:")
+logger.info(f"  Total images analyzed: {total_images}")
+logger.info(f"  Total modules: {total_modules:,}")
+logger.info(f"  Class imbalance ratio: {(healthy_modules/defective_modules):.1f}:1")
+logger.info(f"  Defect rate: {defect_rate:.2f}%")
 
-print("\nOperational Impact:")
-print(f"  Time reduction: {time_hours[0]/time_hours[1]:.0f}× faster")
-print(f"  Cost reduction: {cost_dollars[0]/cost_dollars[1]:.0f}× cheaper")
-print(f"  Accuracy improvement: +{accuracy_pct[1]-accuracy_pct[0]:.1f}%")
-print("=" * 70)
+logger.info("Operational Impact:")
+logger.info(f"  Time reduction: {time_hours[0]/time_hours[1]:.0f}× faster")
+logger.info(f"  Cost reduction: {cost_dollars[0]/cost_dollars[1]:.0f}× cheaper")
+logger.info(f"  Accuracy improvement: +{accuracy_pct[1]-accuracy_pct[0]:.1f}%")
+logger.info("=" * 70)
 
