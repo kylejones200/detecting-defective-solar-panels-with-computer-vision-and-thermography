@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import json
 from pathlib import Path
 from PIL import Image
+np.random.seed(42)
 
 
 
@@ -135,7 +136,6 @@ logger.info("✓ Class distribution saved")
 logger.info("Generating training curves...")
 
 # Simulate realistic training data (based on typical ResNet-18 transfer learning)
-np.random.seed(42)
 epochs = np.arange(1, 21)
 
 # Training curve with early overfitting control
