@@ -118,19 +118,16 @@ With autpmated inspetion, we coiuld inspect all 10K pane.s in 2--3 hours at a co
 I've made everything available on GitHub:
 
 ``` 
-```
 
-``` 
+
 # Install dependencies
 pip install -r requirements.txt
-```
 
-``` 
+
 # Run the analysis
 python pv_analysis.py
-```
 
-``` 
+
 # Or use the Jupyter notebook
 jupyter notebook pv_defect_detection.ipynb
 ```
