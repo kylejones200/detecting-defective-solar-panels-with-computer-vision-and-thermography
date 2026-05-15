@@ -4,12 +4,9 @@ Blog 33: Solar Panel Defect Detection - Visualizations
 Generate Tufte-style black and white visualizations for solar panel defect detection analysis
 """
 
-import signalplot
 import sys
-import logging
 import os
-
-logger = logging.getLogger(__name__)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
 import pandas as pd
@@ -17,17 +14,16 @@ import matplotlib.pyplot as plt
 import json
 from pathlib import Path
 from PIL import Image
-np.random.seed(42)
-
-
-
+from plot_style import (
     set_tufte_defaults, 
     apply_tufte_style, 
     save_tufte_figure, 
     COLORS
 )
 
-logger.info("Blog 33: Solar Panel Defect Detection - Visualizations")
+print("=" * 70)
+print("Blog 33: Solar Panel Defect Detection - Visualizations")
+print("=" * 70)
 
 # Data paths
 DATA_DIR = Path("/Users/k.jones/Downloads/archive (3)")
@@ -37,7 +33,7 @@ DATASET_2 = DATA_DIR / "dataset_2"
 # ============================================================================
 # STEP 1: Load and analyze annotations
 # ============================================================================
-logger.info("Analyzing dataset annotations...")
+print("\nAnalyzing dataset annotations...")
 
 def load_annotations(dataset_path):
     """Load all annotations from a dataset directory."""
@@ -75,8 +71,8 @@ modules_df2, images_df2 = load_annotations(DATASET_2)
 modules_df = pd.concat([modules_df1, modules_df2], ignore_index=True)
 images_df = pd.concat([images_df1, images_df2], ignore_index=True)
 
-logger.info(f"✓ Loaded {len(images_df)} images")
-logger.info(f"✓ Analyzed {len(modules_df)} solar modules")
+print(f"✓ Loaded {len(images_df)} images")
+print(f"✓ Analyzed {len(modules_df)} solar modules")
 
 # Calculate statistics
 total_images = len(images_df)
@@ -86,19 +82,19 @@ healthy_modules = total_modules - defective_modules
 images_with_defects = images_df['has_defects'].sum()
 defect_rate = (defective_modules / total_modules) * 100
 
-logger.info(f"Dataset Statistics:")
-logger.info(f"  Total Images: {total_images}")
-logger.info(f"  Total Modules: {total_modules}")
-logger.info(f"  Defective: {defective_modules} ({defect_rate:.1f}%)")
-logger.info(f"  Healthy: {healthy_modules} ({100-defect_rate:.1f}%)")
-logger.info(f"  Images with defects: {images_with_defects}/{total_images}")
+print(f"\nDataset Statistics:")
+print(f"  Total Images: {total_images}")
+print(f"  Total Modules: {total_modules}")
+print(f"  Defective: {defective_modules} ({defect_rate:.1f}%)")
+print(f"  Healthy: {healthy_modules} ({100-defect_rate:.1f}%)")
+print(f"  Images with defects: {images_with_defects}/{total_images}")
 
 # ============================================================================
 # VISUALIZATION 1: Dataset Overview - Class Distribution
 # ============================================================================
-logger.info("Generating class distribution visualization...")
+print("\nGenerating class distribution visualization...")
 
-signalplot.apply(font_family='serif')
+set_tufte_defaults()
 fig, ax = plt.subplots(figsize=(10, 6))
 
 categories = ['Healthy\nModules', 'Defective\nModules']
@@ -106,8 +102,8 @@ counts = [healthy_modules, defective_modules]
 percentages = [100-defect_rate, defect_rate]
 
 # Create bars with white fill and black edges
-bars = ax.bar(categories, counts, color="#ffffff", 
-              edgecolor="#2b2b2b", linewidth=2, alpha=0.9)
+bars = ax.bar(categories, counts, color=COLORS['white'], 
+              edgecolor=COLORS['black'], linewidth=2, alpha=0.9)
 
 # Add count labels on bars
 for i, (bar, count, pct) in enumerate(zip(bars, counts, percentages)):
@@ -123,19 +119,20 @@ ax.set_ylim(0, max(counts) * 1.15)
 # Add annotation about imbalance challenge
 ax.annotate('Only 0.5% defective\nrequires careful handling\nof class imbalance', 
             xy=(1, defective_modules), xytext=(0.5, healthy_modules*0.5),
-            arrowprops=dict(arrowstyle='->', color="#2b2b2b", lw=1.5),
+            arrowprops=dict(arrowstyle='->', color=COLORS['black'], lw=1.5),
             fontsize=10, ha='center')
 
-signalplot.tidy_axes(ax)
-signalplot.save('33_solar_class_distribution.png')
-logger.info("✓ Class distribution saved")
+apply_tufte_style(ax, show_grid=False)
+save_tufte_figure('33_solar_class_distribution.png')
+print("✓ Class distribution saved")
 
 # ============================================================================
 # VISUALIZATION 2: Training Simulation - Model Learning Curves
 # ============================================================================
-logger.info("Generating training curves...")
+print("\nGenerating training curves...")
 
 # Simulate realistic training data (based on typical ResNet-18 transfer learning)
+np.random.seed(42)
 epochs = np.arange(1, 21)
 
 # Training curve with early overfitting control
@@ -160,9 +157,9 @@ val_acc = np.clip(val_acc, 50, 98.8)
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
 
 # Loss plot
-ax1.plot(epochs, train_loss, 'o-', color="#2b2b2b", linewidth=2, 
+ax1.plot(epochs, train_loss, 'o-', color=COLORS['black'], linewidth=2, 
          markersize=5, label='Training', alpha=0.9)
-ax1.plot(epochs, val_loss, 's--', color="#a0a0a0", linewidth=2, 
+ax1.plot(epochs, val_loss, 's--', color=COLORS['gray'], linewidth=2, 
          markersize=5, label='Validation', alpha=0.8)
 ax1.set_xlabel('Epoch')
 ax1.set_ylabel('Cross-Entropy Loss')
@@ -171,19 +168,20 @@ ax1.legend(loc='upper right', frameon=False)
 
 # Mark best epoch
 best_epoch = np.argmin(val_loss) + 1
-ax1.axvline(x=best_epoch, color="#2980b9", linestyle=':', 
+ax1.axvline(x=best_epoch, color=COLORS['accent_blue'], linestyle=':', 
             linewidth=1.5, alpha=0.7)
 ax1.annotate(f'Best: Epoch {best_epoch}', 
              xy=(best_epoch, val_loss[best_epoch-1]), 
              xytext=(best_epoch+3, val_loss[best_epoch-1]+0.05),
-             arrowprops=dict(arrowstyle='->', color="#2980b9", lw=1.5),
+             arrowprops=dict(arrowstyle='->', color=COLORS['accent_blue'], lw=1.5),
              fontsize=10)
 
+apply_tufte_style(ax1, show_grid=False)
 
 # Accuracy plot
-ax2.plot(epochs, train_acc, 'o-', color="#2b2b2b", linewidth=2, 
+ax2.plot(epochs, train_acc, 'o-', color=COLORS['black'], linewidth=2, 
          markersize=5, label='Training', alpha=0.9)
-ax2.plot(epochs, val_acc, 's--', color="#a0a0a0", linewidth=2, 
+ax2.plot(epochs, val_acc, 's--', color=COLORS['gray'], linewidth=2, 
          markersize=5, label='Validation', alpha=0.8)
 ax2.set_xlabel('Epoch')
 ax2.set_ylabel('Accuracy (%)')
@@ -193,21 +191,22 @@ ax2.set_ylim(50, 100)
 
 # Mark final validation accuracy
 final_val_acc = val_acc[-1]
-ax2.axhline(y=final_val_acc, color="#27ae60", linestyle=':', 
+ax2.axhline(y=final_val_acc, color=COLORS['accent_green'], linestyle=':', 
             linewidth=1.5, alpha=0.7)
 ax2.text(1, final_val_acc + 1.5, f'{final_val_acc:.1f}%', 
-         fontsize=10, color="#27ae60", fontweight='bold')
+         fontsize=10, color=COLORS['accent_green'], fontweight='bold')
 
+apply_tufte_style(ax2, show_grid=False)
 
 plt.suptitle('ResNet-18 Transfer Learning: 20 Epochs', y=1.02, fontsize=14, fontweight='bold')
 plt.tight_layout()
-signalplot.save('33_solar_training_curves.png')
-logger.info("✓ Training curves saved")
+save_tufte_figure('33_solar_training_curves.png')
+print("✓ Training curves saved")
 
 # ============================================================================
 # VISUALIZATION 3: Confusion Matrix
 # ============================================================================
-logger.info("Generating confusion matrix...")
+print("\nGenerating confusion matrix...")
 
 # Simulate final model predictions (98.7% accuracy on validation set)
 n_val_samples = int(total_modules * 0.2)  # 20% validation split
@@ -248,7 +247,7 @@ for i in range(2):
         
         ax.text(j, i, f'{count}\n({percentage:.1f}%)',
                 ha="center", va="center", fontsize=size, fontweight=weight,
-                color="#2b2b2b")
+                color=COLORS['black'])
 
 # Labels
 ax.set_xticks([0, 1])
@@ -262,19 +261,21 @@ ax.set_title('Confusion Matrix: Validation Set Performance', pad=15, fontsize=13
 # Add grid
 for spine in ax.spines.values():
     spine.set_visible(True)
-    spine.set_color("#2b2b2b")
+    spine.set_color(COLORS['black'])
     spine.set_linewidth(2)
 
 ax.set_xticks([0.5], minor=True)
 ax.set_yticks([0.5], minor=True)
+ax.grid(which='minor', color=COLORS['black'], linestyle='-', linewidth=2)
+
 plt.tight_layout()
-signalplot.save('33_solar_confusion_matrix.png')
-logger.info("✓ Confusion matrix saved")
+save_tufte_figure('33_solar_confusion_matrix.png')
+print("✓ Confusion matrix saved")
 
 # ============================================================================
 # VISUALIZATION 4: Precision-Recall Trade-off
 # ============================================================================
-logger.info("Generating precision-recall curve...")
+print("\nGenerating precision-recall curve...")
 
 # Simulate precision-recall curve (typical for imbalanced classification)
 recall = np.linspace(0, 1, 100)
@@ -285,23 +286,23 @@ precision = np.clip(precision, 0, 1)
 fig, ax = plt.subplots(figsize=(10, 6))
 
 # Plot PR curve
-ax.plot(recall, precision, color="#2b2b2b", linewidth=2.5, alpha=0.9)
+ax.plot(recall, precision, color=COLORS['black'], linewidth=2.5, alpha=0.9)
 
 # Fill area under curve
-ax.fill_between(recall, 0, precision, color="#a0a0a0", alpha=0.15)
+ax.fill_between(recall, 0, precision, color=COLORS['gray'], alpha=0.15)
 
 # Mark operating point (recall=0.938, precision=0.952)
 op_recall = 0.938
 op_precision = 0.952
-ax.plot(op_recall, op_precision, 'o', color="#d62728", 
-        markersize=12, markeredgewidth=2, markeredgecolor="#2b2b2b")
+ax.plot(op_recall, op_precision, 'o', color=COLORS['accent_red'], 
+        markersize=12, markeredgewidth=2, markeredgecolor=COLORS['black'])
 ax.annotate('Operating Point\nRecall: 93.8%\nPrecision: 95.2%', 
             xy=(op_recall, op_precision), 
             xytext=(0.65, 0.75),
-            arrowprops=dict(arrowstyle='->', color="#d62728", lw=2),
+            arrowprops=dict(arrowstyle='->', color=COLORS['accent_red'], lw=2),
             fontsize=11, ha='center',
             bbox=dict(boxstyle='round,pad=0.5', facecolor='white', 
-                     edgecolor="#2b2b2b", linewidth=1.5))
+                     edgecolor=COLORS['black'], linewidth=1.5))
 
 # Add F1 score contours (implicit)
 f1_score = 2 * (op_precision * op_recall) / (op_precision + op_recall)
@@ -309,7 +310,7 @@ ax.text(0.05, 0.95, f'F1 Score: {f1_score:.3f}',
         transform=ax.transAxes, fontsize=12, fontweight='bold',
         verticalalignment='top',
         bbox=dict(boxstyle='round', facecolor='white', 
-                 edgecolor="#2b2b2b", linewidth=1.5))
+                 edgecolor=COLORS['black'], linewidth=1.5))
 
 ax.set_xlabel('Recall (Sensitivity)', fontsize=12)
 ax.set_ylabel('Precision', fontsize=12)
@@ -317,23 +318,23 @@ ax.set_title('Precision-Recall Curve: High Performance on Imbalanced Data', pad=
 ax.set_xlim(0, 1)
 ax.set_ylim(0, 1)
 
-signalplot.tidy_axes(ax)
-signalplot.save('33_solar_precision_recall.png')
-logger.info("✓ Precision-recall curve saved")
+apply_tufte_style(ax, show_grid=True)
+save_tufte_figure('33_solar_precision_recall.png')
+print("✓ Precision-recall curve saved")
 
 # ============================================================================
 # VISUALIZATION 5: Sample Thermal Image with Annotations
 # ============================================================================
-logger.info("Generating sample thermal image visualization...")
+print("\nGenerating sample thermal image visualization...")
 
-# Load a sample image with defects (find one with defective modules) - VECTORIZED
+# Load a sample image with defects (find one with defective modules)
 sample_image_name = None
 sample_annotations = None
 
-# Vectorized: Find first image with defects (100x faster than iterrows)
-defect_images = images_df[images_df['has_defects']]
-if len(defect_images) > 0:
-    sample_image_name = defect_images.iloc[0]['image']
+for img_name, row in images_df.iterrows():
+    if row['has_defects']:
+        sample_image_name = row['image']
+        break
 
 # If we found an image with defects, load it
 if sample_image_name:
@@ -375,12 +376,12 @@ if sample_image_name:
             
             if is_defective:
                 # Red for defective
-                ax2.plot(xs, ys, color="#d62728", linewidth=2.5, alpha=0.9)
+                ax2.plot(xs, ys, color=COLORS['accent_red'], linewidth=2.5, alpha=0.9)
                 # Add red fill
-                ax2.fill(xs, ys, color="#d62728", alpha=0.2)
+                ax2.fill(xs, ys, color=COLORS['accent_red'], alpha=0.2)
             else:
                 # Gray for healthy
-                ax2.plot(xs, ys, color="#a0a0a0", linewidth=1, alpha=0.5)
+                ax2.plot(xs, ys, color=COLORS['gray'], linewidth=1, alpha=0.5)
         
         ax2.set_title('AI Detection Results', pad=12, fontsize=12)
         ax2.axis('off')
@@ -388,28 +389,28 @@ if sample_image_name:
         # Add legend
         from matplotlib.patches import Patch
         legend_elements = [
-            Patch(facecolor="#a0a0a0", alpha=0.3, edgecolor="#a0a0a0", 
+            Patch(facecolor=COLORS['gray'], alpha=0.3, edgecolor=COLORS['gray'], 
                   label='Healthy Module'),
-            Patch(facecolor="#d62728", alpha=0.3, edgecolor="#d62728", 
+            Patch(facecolor=COLORS['accent_red'], alpha=0.3, edgecolor=COLORS['accent_red'], 
                   label='Defective Module')
         ]
         ax2.legend(handles=legend_elements, loc='upper right', frameon=True, 
-                  fancybox=False, edgecolor="#2b2b2b")
+                  fancybox=False, edgecolor=COLORS['black'])
         
         plt.suptitle('Automated Defect Detection on Thermal Imagery', 
                     y=0.98, fontsize=14, fontweight='bold')
         plt.tight_layout()
-        signalplot.save('33_solar_detection_example.png')
-        logger.info("✓ Detection example saved")
+        save_tufte_figure('33_solar_detection_example.png')
+        print("✓ Detection example saved")
     else:
-        logger.info("⚠ Sample image not found, skipping visualization")
+        print("⚠ Sample image not found, skipping visualization")
 else:
-    logger.info("⚠ No images with defects found in dataset")
+    print("⚠ No images with defects found in dataset")
 
 # ============================================================================
 # VISUALIZATION 6: Cost-Benefit Analysis
 # ============================================================================
-logger.info("Generating cost-benefit comparison...")
+print("\nGenerating cost-benefit comparison...")
 
 fig, ax = plt.subplots(figsize=(12, 7))
 
@@ -423,11 +424,11 @@ width = 0.25
 
 # Create grouped bars
 bars1 = ax.bar(x - width, time_hours, width, label='Time (hours)', 
-               color="#ffffff", edgecolor="#2b2b2b", linewidth=1.5)
+               color=COLORS['white'], edgecolor=COLORS['black'], linewidth=1.5)
 bars2 = ax.bar(x, [c/100 for c in cost_dollars], width, label='Cost ($100s)', 
-               color="#d3d3d3", edgecolor="#2b2b2b", linewidth=1.5)
+               color=COLORS['lightgray'], edgecolor=COLORS['black'], linewidth=1.5)
 bars3 = ax.bar(x + width, accuracy_pct, width, label='Accuracy (%)', 
-               color="#696969", edgecolor="#2b2b2b", linewidth=1.5)
+               color=COLORS['darkgray'], edgecolor=COLORS['black'], linewidth=1.5)
 
 # Add value labels
 for bars in [bars1, bars2, bars3]:
@@ -442,46 +443,50 @@ ax.set_title('Manual vs. Automated Inspection: Cost-Benefit Analysis', pad=15, f
 ax.set_xticks(x)
 ax.set_xticklabels(methods, fontsize=11)
 ax.legend(loc='upper left', frameon=True, fancybox=False, 
-         edgecolor="#2b2b2b", fontsize=10)
+         edgecolor=COLORS['black'], fontsize=10)
 
 # Add efficiency improvement annotation
 ax.annotate('160× faster\n10× cheaper\n31% more accurate', 
             xy=(1, accuracy_pct[1]), 
             xytext=(0.3, 250),
-            arrowprops=dict(arrowstyle='->', color="#27ae60", lw=2),
+            arrowprops=dict(arrowstyle='->', color=COLORS['accent_green'], lw=2),
             fontsize=11, ha='center', fontweight='bold',
             bbox=dict(boxstyle='round,pad=0.5', facecolor='white', 
-                     edgecolor="#27ae60", linewidth=2))
+                     edgecolor=COLORS['accent_green'], linewidth=2))
 
-signalplot.save('33_solar_cost_benefit.png')
-logger.info("✓ Cost-benefit analysis saved")
+apply_tufte_style(ax, show_grid=False)
+save_tufte_figure('33_solar_cost_benefit.png')
+print("✓ Cost-benefit analysis saved")
 
 # ============================================================================
 # Summary
 # ============================================================================
-logger.info("All visualizations generated successfully!")
-logger.info("Files created:")
-logger.info("  - 33_solar_class_distribution.png")
-logger.info("  - 33_solar_training_curves.png")
-logger.info("  - 33_solar_confusion_matrix.png")
-logger.info("  - 33_solar_precision_recall.png")
-logger.info("  - 33_solar_detection_example.png")
-logger.info("  - 33_solar_cost_benefit.png")
+print("\n" + "=" * 70)
+print("All visualizations generated successfully!")
+print("=" * 70)
+print("\nFiles created:")
+print("  - 33_solar_class_distribution.png")
+print("  - 33_solar_training_curves.png")
+print("  - 33_solar_confusion_matrix.png")
+print("  - 33_solar_precision_recall.png")
+print("  - 33_solar_detection_example.png")
+print("  - 33_solar_cost_benefit.png")
 
-logger.info("Final Model Performance:")
-logger.info(f"  Validation Accuracy: {val_acc[-1]:.1f}%")
-logger.info(f"  Precision: {op_precision*100:.1f}%")
-logger.info(f"  Recall: {op_recall*100:.1f}%")
-logger.info(f"  F1 Score: {f1_score:.3f}")
+print("\nFinal Model Performance:")
+print(f"  Validation Accuracy: {val_acc[-1]:.1f}%")
+print(f"  Precision: {op_precision*100:.1f}%")
+print(f"  Recall: {op_recall*100:.1f}%")
+print(f"  F1 Score: {f1_score:.3f}")
 
-logger.info("Dataset Summary:")
-logger.info(f"  Total images analyzed: {total_images}")
-logger.info(f"  Total modules: {total_modules:,}")
-logger.info(f"  Class imbalance ratio: {(healthy_modules/defective_modules):.1f}:1")
-logger.info(f"  Defect rate: {defect_rate:.2f}%")
+print("\nDataset Summary:")
+print(f"  Total images analyzed: {total_images}")
+print(f"  Total modules: {total_modules:,}")
+print(f"  Class imbalance ratio: {(healthy_modules/defective_modules):.1f}:1")
+print(f"  Defect rate: {defect_rate:.2f}%")
 
-logger.info("Operational Impact:")
-logger.info(f"  Time reduction: {time_hours[0]/time_hours[1]:.0f}× faster")
-logger.info(f"  Cost reduction: {cost_dollars[0]/cost_dollars[1]:.0f}× cheaper")
-logger.info(f"  Accuracy improvement: +{accuracy_pct[1]-accuracy_pct[0]:.1f}%")
+print("\nOperational Impact:")
+print(f"  Time reduction: {time_hours[0]/time_hours[1]:.0f}× faster")
+print(f"  Cost reduction: {cost_dollars[0]/cost_dollars[1]:.0f}× cheaper")
+print(f"  Accuracy improvement: +{accuracy_pct[1]-accuracy_pct[0]:.1f}%")
+print("=" * 70)
 
