@@ -1,3 +1,8 @@
+---
+canonical_link: "https://medium.com/p/5cd0a43fc187"
+date_exported_from_medium: "November 10, 2025"
+---
+
 # Detecting Defective Solar Panels with Computer Vision and Thermography Using AI and Thermal Imaging for Solar Farm Maintenance
 
 ### Detecting Defective Solar Panels with Computer Vision and Thermography 
@@ -258,8 +263,3 @@ Current approach: Cloud/server inference Next step:
 - ONNX export for cross-platform deployment
 - TensorFlow Lite for mobile/edge devices
 - Real-time inference on drones
-
-####  
-\ [View original.](https://medium.com/p/5cd0a43fc187)
-
-Exported from [Medium](https://medium.com) on November 10, 2025.
