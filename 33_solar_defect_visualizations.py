@@ -7,7 +7,6 @@ Generate Tufte-style black and white visualizations for solar panel defect detec
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import json
 from pathlib import Path
