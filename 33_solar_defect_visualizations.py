@@ -22,7 +22,7 @@ print("Blog 33: Solar Panel Defect Detection - Visualizations")
 print("=" * 70)
 
 # Data paths
-DATA_DIR = Path("/Users/k.jones/Downloads/archive (3)")
+DATA_DIR = Path("data")
 DATASET_1 = DATA_DIR / "dataset_1"
 DATASET_2 = DATA_DIR / "dataset_2"
 
