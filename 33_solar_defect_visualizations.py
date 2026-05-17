@@ -428,9 +428,10 @@ def main():
     sample_image_name = None
     sample_annotations = None
 
-    for img_name, row in images_df.iterrows():
-        if row["has_defects"]:
-            sample_image_name = row["image"]
+    for row in images_df.itertuples():
+        img_name = row.Index
+        if row.has_defects:
+            sample_image_name = row.image
             break
 
     # If we found an image with defects, load it
