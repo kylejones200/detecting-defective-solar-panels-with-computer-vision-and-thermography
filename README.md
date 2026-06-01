@@ -11,14 +11,7 @@ Solar energy is booming. Global solar capacity has grown from 40 GW in 2010 to o
 
 - Slow: Checking 10,000 panels takes weeks - Expensive: Requires specialized trained technicians - Inconsistent: Human inspectors miss subtle defects - Dangerous: Climbing on roofs, working in extreme heat
 
-## About
 
-Place the code for this article in this repository.
-The original article export is saved as `article.md`.
-
-## Files
-
-Add your `.ipynb`, `.py`, `.yaml`, `.js`, `.ts`, or other project files here.
 
 ## Disclaimer
 
