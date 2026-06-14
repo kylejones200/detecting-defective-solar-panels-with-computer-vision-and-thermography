@@ -1,0 +1,65 @@
+data:
+  kaggle_dataset: pythonafroz/solar-panel-images
+  download_kaggle: true
+  archive_path: null
+  extract_dir: data/raw
+  faulty_panel_subdir: Faulty_solar_panel
+  binary_dataset_dir: data/binary_solar_panels
+
+training:
+  img_height: 244
+  img_width: 244
+  clip_img_size: 224
+  batch_size: 32
+  validation_split: 0.2
+  seed: 42
+  epochs: 20
+  fine_tune_epochs: 15
+  learning_rate: 0.001
+  fine_tune_learning_rate: 0.0001
+  early_stopping_patience: 5
+
+model:
+  clip_model_id: openai/clip-vit-base-patch32
+
+clip:
+  default_temperature: 100.0
+  confidence_temperature: 50.0
+  temperature_candidates: [50.0, 100.0, 150.0]
+  threshold_search_start: 0.3
+  threshold_search_end: 0.7
+  threshold_search_step: 0.05
+  paired_prompts:
+    - ["a clean solar panel in good condition", "a defective solar panel with damage"]
+    - ["a solar panel without visible defects", "a dirty or faulty solar panel"]
+  text_descriptions:
+    clean:
+      - "a clean solar panel in good condition"
+      - "a solar panel without visible defects"
+    not_clean:
+      - "a defective solar panel with damage"
+      - "a dirty or faulty solar panel"
+
+output:
+  dir: outputs
+  show_plots: false
+  save_plots: true
+
+pipeline:
+  steps:
+    - explore_kaggle_dataset
+    - build_vgg16_and_explore
+    - train_multiclass_checkpoint
+    - fine_tune_multiclass
+    - clip_zero_shot_kaggle
+    - train_mobilenet_faulty_panel
+    - train_multiclass_faulty_panel
+    - extract_archive
+    - prepare_binary_dataset
+    - compare_mobilenet_clip
+    - train_binary_classifier
+    - clip_zero_shot_faulty_panel
+    - clip_binary_evaluation
+    - clip_binary_dataset_evaluation
+    - clip_temperature_tuning
+    - clip_weighted_confidence

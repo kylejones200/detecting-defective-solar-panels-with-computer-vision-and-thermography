@@ -4,6 +4,7 @@ version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
     "pydantic>=2.10.0",
+    "pyyaml>=6.0.2",
     "pytest>=8.0",
     "kagglehub>=1.0.1",
     "matplotlib>=3.10.9",
@@ -15,6 +16,19 @@ dependencies = [
     "torch>=2.12.0",
     "transformers>=5.8.1",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["solar_panel_cv"]
+
+[tool.uv]
+package = true
+
+[project.scripts]
+solar-panel-cv = "solar_panel_cv.cli:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

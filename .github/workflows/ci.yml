@@ -19,7 +19,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip ruff
           targets=""
-          for path in src tests scripts; do
+          for path in solar_panel_cv tests scripts; do
             [ -e "$path" ] && targets="$targets $path"
           done
           if [ -z "$targets" ] && [ -f main.py ] && ! head -1 main.py | grep -q '^---'; then
